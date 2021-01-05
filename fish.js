@@ -6,7 +6,7 @@ import {OBJLoader} from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm
 
 let _APP = null;
 
-const _NUM_BOIDS = 100;
+const _NUM_BOIDS = 70;
 const _BOID_SPEED = 2.5;
 const _BOID_ACCELERATION = _BOID_SPEED / 5.0;
 const _BOID_FORCE_MAX = _BOID_ACCELERATION / 10.0;
@@ -322,15 +322,24 @@ class FishDemo extends game.Game {
     
     const loader = new OBJLoader();
     const geoLibrary = {};
-    loader.load("./resources/clown_fish1.obj", (result) => {
+    loader.load("./resources/swordfishobj.obj", (result) => {
       geoLibrary.fish = result.children[0].geometry;
-      loader.load("./resources/whale3.obj", (result) => {
-        geoLibrary.bigFish = result.children[0].geometry;
-        this._CreateBoids(geoLibrary);
-      });
+      
+    });
+    loader.load("./resources/whale3.obj", (result) => {
+      geoLibrary.bigFish = result.children[0].geometry;
+      this._CreateBoids(geoLibrary);
+    });
+    loader.load("./resources/clown_fish1.obj", (result) => {
+      geoLibrary.smallfish = result.children[0].geometry;
+      this._CreateBoids(geoLibrary);
     });
     loader.load("./resources/whale3.obj", (result) => {
       geoLibrary.envir = result.children[0].geometry;
+      this._CreateBoids(geoLibrary);
+    });
+    loader.load("./resources/hammerhead.obj", (result) => {
+      geoLibrary.shark = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
     });
 
@@ -368,7 +377,7 @@ class FishDemo extends game.Game {
     const NUM_SMALL = _NUM_BOIDS * 2;
     const NUM_MEDIUM = _NUM_BOIDS / 2;
     const NUM_LARGE = _NUM_BOIDS / 20;
-    const NUM_WHALES = 3;
+    const NUM_WHALES = 0.5;
 
     let params = {
       geometry: geoLibrary.envir,
@@ -385,7 +394,7 @@ class FishDemo extends game.Game {
     }
 
       params = {
-      geometry: geoLibrary.fish,
+      geometry: geoLibrary.smallfish,
       speedMin: 3.0,
       speedMax: 4.0,
       speed: _BOID_SPEED,
@@ -413,13 +422,13 @@ class FishDemo extends game.Game {
     }
 
     params = {
-      geometry: geoLibrary.fish,
+      geometry: geoLibrary.shark,
       speedMin: 0.4,
       speedMax: 0.6,
       speed: _BOID_SPEED,
       maxSteeringForce: _BOID_FORCE_MAX / 4,
       acceleration: _BOID_ACCELERATION,
-      colour: 0xFF8080,
+      colour: 0xFF0080,
     };
     for (let i = 0; i < NUM_LARGE; i++) {
       const e = new Boid(this, params);
