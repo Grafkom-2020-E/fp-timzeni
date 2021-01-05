@@ -322,14 +322,14 @@ class FishDemo extends game.Game {
     
     const loader = new OBJLoader();
     const geoLibrary = {};
-    loader.load("./resources/EOSINOFIL.obj", (result) => {
+    loader.load("./resources/clown_fish1.obj", (result) => {
       geoLibrary.fish = result.children[0].geometry;
-      loader.load("./resources/bigfish.obj", (result) => {
+      loader.load("./resources/clown_fish1.obj", (result) => {
         geoLibrary.bigFish = result.children[0].geometry;
         this._CreateBoids(geoLibrary);
       });
     });
-    loader.load("./resources/LIMFOSITB.obj", (result) => {
+    loader.load("./resources/clown_fish1.obj", (result) => {
       geoLibrary.envir = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
     });
@@ -339,7 +339,7 @@ class FishDemo extends game.Game {
 
   _LoadBackground() {
     const loader = new THREE.TextureLoader();
-    const texture = loader.load('./resources/underwater1.jpg');
+    const texture = loader.load('./resources/444035.jpg');
     this._graphics._scene.background = texture;
   }
 
