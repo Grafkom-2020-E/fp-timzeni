@@ -324,12 +324,12 @@ class FishDemo extends game.Game {
     const geoLibrary = {};
     loader.load("./resources/clown_fish1.obj", (result) => {
       geoLibrary.fish = result.children[0].geometry;
-      loader.load("./resources/clown_fish1.obj", (result) => {
+      loader.load("./resources/whale3.obj", (result) => {
         geoLibrary.bigFish = result.children[0].geometry;
         this._CreateBoids(geoLibrary);
       });
     });
-    loader.load("./resources/clown_fish1.obj", (result) => {
+    loader.load("./resources/whale3.obj", (result) => {
       geoLibrary.envir = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
     });
