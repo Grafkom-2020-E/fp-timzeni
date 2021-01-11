@@ -3,6 +3,7 @@ import {game} from './game.js';
 import {math} from './math.js';
 import {visibility} from './visibility.js';
 import {OBJLoader} from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm/loaders/OBJLoader.js';
+import {MTLLoader} from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm/loaders/MTLLoader.js';
 
 let _APP = null;
 
@@ -15,7 +16,7 @@ const _BOID_FORCE_ALIGNMENT = 10;
 const _BOID_FORCE_SEPARATION = 20;
 const _BOID_FORCE_COHESION = 10;
 const _BOID_FORCE_WANDER = 3;
-
+//const matloader = new THREE.MTLLoader();
 
 class LineRenderer {
   constructor(game) {
@@ -322,10 +323,27 @@ class FishDemo extends game.Game {
     
     const loader = new OBJLoader();
     const geoLibrary = {};
-    loader.load("./resources/swordfishobj.obj", (result) => {
-      geoLibrary.fish = result.children[0].geometry;
-      
-    });
+    const manager = new THREE.LoadingManager();
+    //manager.addHandler( /\.dds$/i, new DDSLoader() );    
+    // loader.load("./resources/swordfishobj.obj", (result) => {
+    //   geoLibrary.fish = result.children[0].geometry;
+    
+    // });
+    new MTLLoader( manager )
+    .setPath( '/resources/' )
+    .load( 'swordfish.mtl', function ( materials ) {
+
+      materials.preload();
+
+      new OBJLoader( manager )
+        .setMaterials( materials )
+        .setPath( '/resources/' )
+        .load( 'swordfish.obj', (result) => {
+          geoLibrary.fish = result.children[0].geometry;
+          this._CreateBoids(geoLibrary);
+        })
+    } );
+  
     loader.load("./resources/whale3.obj", (result) => {
       geoLibrary.bigFish = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
