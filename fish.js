@@ -4,7 +4,7 @@ import {math} from './math.js';
 import {visibility} from './visibility.js';
 import {OBJLoader} from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm/loaders/OBJLoader.js';
 import {MTLLoader} from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm/loaders/MTLLoader.js';
-
+import {graphics} from './graphics.js';
 let _APP = null;
 
 const _NUM_BOIDS = 70;
@@ -324,26 +324,35 @@ class FishDemo extends game.Game {
     const loader = new OBJLoader();
     const geoLibrary = {};
     const manager = new THREE.LoadingManager();
-    //manager.addHandler( /\.dds$/i, new DDSLoader() );    
-    // loader.load("./resources/swordfishobj.obj", (result) => {
-    //   geoLibrary.fish = result.children[0].geometry;
     
-    // });
     new MTLLoader( manager )
     .setPath( '/resources/' )
-    .load( 'swordfish.mtl', function ( materials ) {
+    .load( 'swordfishobj.mtl', function ( materials ) {
 
       materials.preload();
 
       new OBJLoader( manager )
         .setMaterials( materials )
         .setPath( '/resources/' )
-        .load( 'swordfish.obj', (result) => {
+        .load( 'swordfishobj.obj', (result) => {
           geoLibrary.fish = result.children[0].geometry;
           this._CreateBoids(geoLibrary);
         })
-    } );
+      })
+      new MTLLoader( manager )
+      .setPath( '/resources/' )
+      .load( 'hammerhead.mtl', function ( materials ) {
+
+        materials.preload();
   
+        new OBJLoader( manager )
+          .setMaterials( materials )
+          .setPath( '/resources/' )
+          .load( 'hammerhead.obj', (result) => {
+            geoLibrary.shark = result.children[0].geometry;
+            this._CreateBoids(geoLibrary);
+          })
+        })
     loader.load("./resources/whale3.obj", (result) => {
       geoLibrary.bigFish = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
@@ -356,13 +365,14 @@ class FishDemo extends game.Game {
       geoLibrary.envir = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
     });
-    loader.load("./resources/hammerhead.obj", (result) => {
-      geoLibrary.shark = result.children[0].geometry;
-      this._CreateBoids(geoLibrary);
-    });
+    // loader.load("./resources/hammerhead.obj", (result) => {
+    //   geoLibrary.shark = result.children[0].geometry;
+    //   this._CreateBoids(geoLibrary);
+    // });
 
     this._CreateEntities();
   }
+
 
   _LoadBackground() {
     const loader = new THREE.TextureLoader();
@@ -446,7 +456,7 @@ class FishDemo extends game.Game {
       speed: _BOID_SPEED,
       maxSteeringForce: _BOID_FORCE_MAX / 4,
       acceleration: _BOID_ACCELERATION,
-      colour: 0xFF0080,
+      // colour: 0xFF0080,
     };
     for (let i = 0; i < NUM_LARGE; i++) {
       const e = new Boid(this, params);
@@ -476,8 +486,9 @@ class FishDemo extends game.Game {
     if (this._entities.length == 0) {
       return;
     }
+   
+// const eye = this._entities[0].Position.clone();
 
-    // const eye = this._entities[0].Position.clone();
     // const dir = this._entities[0].Direction.clone();
     // dir.multiplyScalar(5);
     // eye.sub(dir);
@@ -498,11 +509,52 @@ class FishDemo extends game.Game {
       e.Step(timeInSeconds);
     }
   }
+
 }
 
 
 function _Main() {
   _APP = new FishDemo();
+
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
+  this._graphics = new graphics.Graphics(this);
+      if (!this._graphics.Initialize()) {
+        this._DisplayError('WebGL2 is not available.');
+        return;
+      }
+
+  function onMouseDown( event, geoLibrary ) {
+    // raycaster = new THREE.Raycaster();
+    // mouse = new THREE.Vector2();
+
+    event.preventDefault();
+
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+    raycaster.setFromCamera (mouse, this._graphics._camera);
+
+    var intersects = raycaster.intersectObjects( geoLibrary.fish);
+    
+    var color = (Math.random() * 0xffffff);
+
+    if (intersects.length > 0) {
+      intersects[0].object.material.color.setHex(color);
+      console.log("test");
+      this.temp = intersects[0].object.material.color.getHexString();
+      this.name = intersects [0].object.name;
+
+      $(".text").empty();
+      $(".popup").append("<div class = 'text'><p>color<strong> #" + this.temp +"</strong></p></div>" );
+      $(".popup").show();
+    }
+  }
+  document.addEventListener ( 'mousedown', onMouseDown, false);
+ 
+      
+
 }
 
 _Main();
