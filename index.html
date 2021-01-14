@@ -2,29 +2,38 @@
 <html>
 <head>
   <title>FP Grafkom tim ZENI</title>
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="base.css">
-  <script src="https://github.com/mrdoob/three.js/blob/r112/build/three.module.js"></script>  
-</head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <style>
-  .popup {
-    max-width: 75%;
-    height: auto;
-    background-color: rgba(255, 255, 255, 0.49);
-    border-radius: 5%;
-    position: absolute;
-    bottom: 5%;
-    left: 16%;
-    padding: 5px 28px 5px 28px;
-    box-shadow: 1px 3px 1px 1px rgba(0, 0, 0, 0.16);
-    z-index: 1109;
-  }
-</style>
-<body>
-  <div class="popup"><div class="text"></div></div>
-  <div id="target"></canvas>
-  <script src="fish.js" type="module">
-  </script>
 
+.bg{
+    background-image: url('resources/menu/Image/bg-img.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+}
+
+.zoom {
+  transition: transform .2s;
+}
+
+.zoom:hover {
+  -ms-transform: scale(1.05); /* IE 9 */
+  -webkit-transform: scale(1.05); /* Safari 3-8 */
+  transform: scale(1.05); 
+}
+</style>
+
+</head>
+<body class= "bg">
+<div class="text-center">
+  <img src="/resources/logo_grafkom.png" style="width: 600px;" class="mt-5">
+</div>
+<div class="text-center mt-5 zoom">
+  <a href="game.html">
+      <img src="resources/start_button.png" style="width: 350px;" class="mt-5">
+  </a>
+
+</div>
 </body>
 </html>

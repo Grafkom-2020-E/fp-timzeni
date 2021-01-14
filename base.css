@@ -42,3 +42,10 @@ body {
   padding: 0;
   overscroll-behavior: none;
 }
+
+.bg{
+  background-image: url('resources/resized.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
