@@ -332,7 +332,19 @@ class FishDemo extends game.Game {
     const loader = new OBJLoader();
     const geoLibrary = {};
     const manager = new THREE.LoadingManager();
-
+    // const objs = [];
+    // const loaders = new THREE.FBXLoader();
+    // loaders.load("./resources/ANEMONEDFIXED2.fbx", model => {
+    //     // model is a THREE.Group (THREE.Object3D)                              
+    //     const mixer = new THREE.AnimationMixer(model);
+    //     // animations is a list of THREE.AnimationClip                          
+    //     mixer.clipAction(model.animations[0]).play();
+    //     // scene.add(model);
+    //     objs.push({model, mixer});
+    // }, (result) => {
+    //   geoLibrary.envir = result.children[0].geometry;
+    //   this._CreateBoids(geoLibrary);
+    // });
     new MTLLoader(manager)
       .setPath('/resources/')
       .load('swordfishobj.mtl', function (materials) {
@@ -347,6 +359,20 @@ class FishDemo extends game.Game {
             this._CreateBoids(geoLibrary);
           })
       })
+      // new MTLLoader(manager)
+      // .setPath('/resources/')
+      // .load('seashell_obj.mtl', function (materials) {
+
+      //   materials.preload();
+
+      //   new OBJLoader(manager)
+      //     .setMaterials(materials)
+      //     .setPath('/resources/')
+      //     .load('seashell_obj.obj', (result) => {
+      //       geoLibrary.fish = result.children[0].geometry;
+      //       this._CreateBoids(geoLibrary);
+      //     })
+      // })
     new MTLLoader(manager)
       .setPath('/resources/')
       .load('hammerhead.mtl', function (materials) {
@@ -365,6 +391,10 @@ class FishDemo extends game.Game {
       geoLibrary.bigFish = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
     });
+    loader.load("./resources/whale3.obj", (result) => {
+      geoLibrary.bigFish = result.children[0].geometry;
+      this._CreateBoids(geoLibrary);
+    });
     loader.load("./resources/clown_fish1.obj", (result) => {
       geoLibrary.smallfish = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
@@ -373,6 +403,7 @@ class FishDemo extends game.Game {
       geoLibrary.envir = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
     });
+    console.log(geoLibrary.envir);
     // loader.load("./resources/hammerhead.obj", (result) => {
     //   geoLibrary.shark = result.children[0].geometry;
     //   this._CreateBoids(geoLibrary);
@@ -422,7 +453,7 @@ class FishDemo extends game.Game {
       speed: _BOID_SPEED,
       maxSteeringForce: _BOID_FORCE_MAX,
       acceleration: _BOID_ACCELERATION,
-      // colour: 0x80FF80,
+      colour: 0x80FF80,
     };
     for (let i = 0; i < NUM_ENV; i++) {
       const e = new Boid(this, params);
@@ -552,6 +583,7 @@ function _changeObjColor(camera, obj) {
   document.addEventListener('mousedown', onMouseDown, false);
 }
 function _Main() {
+
   _APP = new FishDemo();
   let groups = new Array();
   console.log(_APP._entities);
