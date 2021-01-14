@@ -1,10 +1,10 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.112.1/build/three.module.js';
-import {game} from './game.js';
-import {math} from './math.js';
-import {visibility} from './visibility.js';
-import {OBJLoader} from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm/loaders/OBJLoader.js';
-import {MTLLoader} from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm/loaders/MTLLoader.js';
-import {graphics} from './graphics.js';
+import { game } from './game.js';
+import { math } from './math.js';
+import { visibility } from './visibility.js';
+import { OBJLoader } from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'https://cdn.jsdelivr.net/npm/three@0.112.1/examples/jsm/loaders/MTLLoader.js';
+import { graphics } from './graphics.js';
 let _APP = null;
 
 const _NUM_BOIDS = 70;
@@ -41,7 +41,7 @@ class LineRenderer {
     let material = this._materials[hexColour];
     if (!material) {
       this._materials[hexColour] = new THREE.LineBasicMaterial(
-          {color: hexColour});
+        { color: hexColour });
       material = this._materials[hexColour];
     }
 
@@ -55,26 +55,26 @@ class LineRenderer {
 class Boid {
   constructor(game, params) {
     this._mesh = new THREE.Mesh(
-        params.geometry,
-        new THREE.MeshStandardMaterial({color: params.colour}));
+      params.geometry,
+      new THREE.MeshStandardMaterial({ color: params.colour }));
     this._mesh.castShadow = true;
     this._mesh.receiveShadow = false;
 
     this._group = new THREE.Group();
     this._group.add(this._mesh);
     this._group.position.set(
-        math.rand_range(-50, 50),
-        math.rand_range(1, 25),
-        math.rand_range(-50, 50));
+      math.rand_range(-50, 50),
+      math.rand_range(1, 25),
+      math.rand_range(-50, 50));
     this._direction = new THREE.Vector3(
-        math.rand_range(-1, 1),
-        0,
-        math.rand_range(-1, 1));
+      math.rand_range(-1, 1),
+      0,
+      math.rand_range(-1, 1));
     this._velocity = this._direction.clone();
 
     const speedMultiplier = math.rand_range(params.speedMin, params.speedMax);
     this._maxSteeringForce = params.maxSteeringForce * speedMultiplier;
-    this._maxSpeed  = params.speed * speedMultiplier;
+    this._maxSpeed = params.speed * speedMultiplier;
     this._acceleration = params.acceleration * speedMultiplier;
 
     const scale = 1.0 / speedMultiplier;
@@ -85,11 +85,19 @@ class Boid {
     this._game = game;
     game._graphics.Scene.add(this._group);
     this._visibilityIndex = game._visibilityGrid.UpdateItem(
-        this._mesh.uuid, this);
+      this._mesh.uuid, this);
 
     this._wanderAngle = 0;
   }
-
+  raycast(raycaster, intersects){
+    return this._group.raycast(raycaster, intersects)
+    // console.log (this._group.children);
+    // let inter = new Array();
+    // this._group.children.forEach(function(child){
+    //   inter.push(child.raycast(raycaster, intersects))
+    // })
+    // return inter;
+  }
   DisplayDebug() {
     const geometry = new THREE.SphereGeometry(10, 64, 64);
     const material = new THREE.MeshBasicMaterial({
@@ -108,8 +116,8 @@ class Boid {
   _UpdateDebug(local) {
     this._lineRenderer.Reset();
     this._lineRenderer.Add(
-        this.Position, this.Position.clone().add(this._velocity),
-        0xFFFFFF);
+      this.Position, this.Position.clone().add(this._velocity),
+      0xFFFFFF);
     for (const e of local) {
       this._lineRenderer.Add(this.Position, e.Position, 0x00FF00);
     }
@@ -137,7 +145,7 @@ class Boid {
     }
 
     const local = this._game._visibilityGrid.GetLocalEntities(
-        this.Position, 15);
+      this.Position, 15);
 
     this._ApplySteering(timeInSeconds, local);
 
@@ -148,13 +156,13 @@ class Boid {
     const direction = this.Direction;
     const m = new THREE.Matrix4();
     m.lookAt(
-        new THREE.Vector3(0, 0, 0),
-        direction,
-        new THREE.Vector3(0, 1, 0));
+      new THREE.Vector3(0, 0, 0),
+      direction,
+      new THREE.Vector3(0, 1, 0));
     this._group.quaternion.setFromRotationMatrix(m);
 
     this._visibilityIndex = this._game._visibilityGrid.UpdateItem(
-        this._mesh.uuid, this, this._visibilityIndex);
+      this._mesh.uuid, this, this._visibilityIndex);
 
     if (this._displayDebug) {
       this._UpdateDebug(local);
@@ -227,9 +235,9 @@ class Boid {
   _ApplyWander() {
     this._wanderAngle += 0.1 * math.rand_range(-2 * Math.PI, 2 * Math.PI);
     const randomPointOnCircle = new THREE.Vector3(
-        Math.cos(this._wanderAngle),
-        0,
-        Math.sin(this._wanderAngle));
+      Math.cos(this._wanderAngle),
+      0,
+      Math.sin(this._wanderAngle));
     const pointAhead = this._direction.clone();
     pointAhead.multiplyScalar(2);
     pointAhead.add(randomPointOnCircle);
@@ -245,15 +253,15 @@ class Boid {
     const forceVector = new THREE.Vector3(0, 0, 0);
     for (let e of local) {
       const distanceToEntity = Math.max(
-          e.Position.distanceTo(this.Position) - 1.5 * (this.Radius + e.Radius),
-          0.001);
+        e.Position.distanceTo(this.Position) - 1.5 * (this.Radius + e.Radius),
+        0.001);
       const directionFromEntity = new THREE.Vector3().subVectors(
-          this.Position, e.Position);
+        this.Position, e.Position);
       const multiplier = (
-          _BOID_FORCE_SEPARATION / distanceToEntity) * (this.Radius + e.Radius);
+        _BOID_FORCE_SEPARATION / distanceToEntity) * (this.Radius + e.Radius);
       directionFromEntity.normalize();
       forceVector.add(
-          directionFromEntity.multiplyScalar(multiplier));
+        directionFromEntity.multiplyScalar(multiplier));
     }
     return forceVector;
   }
@@ -287,7 +295,7 @@ class Boid {
     averagePosition.multiplyScalar(1.0 / local.length);
 
     const directionToAveragePosition = averagePosition.clone().sub(
-        this.Position);
+      this.Position);
     directionToAveragePosition.normalize();
     directionToAveragePosition.multiplyScalar(_BOID_FORCE_COHESION);
 
@@ -295,13 +303,13 @@ class Boid {
   }
 
   _ApplySeek(destination) {
-    const distance = Math.max(0,((
-        this.Position.distanceTo(destination) - 50) / 250)) ** 2;
+    const distance = Math.max(0, ((
+      this.Position.distanceTo(destination) - 50) / 250)) ** 2;
     const direction = destination.clone().sub(this.Position);
     direction.normalize();
 
     const forceVector = direction.multiplyScalar(
-        _BOID_FORCE_ORIGIN * distance);
+      _BOID_FORCE_ORIGIN * distance);
     return forceVector;
   }
 }
@@ -316,43 +324,43 @@ class FishDemo extends game.Game {
     this._entities = [];
 
     this._graphics.Scene.fog = new THREE.FogExp2(
-        new THREE.Color(0x4d7dbe), 0.01);
+      new THREE.Color(0x4d7dbe), 0.01);
 
     this._LoadBackground();
-      //render fishnya
-    
+    //render fishnya
+
     const loader = new OBJLoader();
     const geoLibrary = {};
     const manager = new THREE.LoadingManager();
-    
-    new MTLLoader( manager )
-    .setPath( '/resources/' )
-    .load( 'swordfishobj.mtl', function ( materials ) {
 
-      materials.preload();
-
-      new OBJLoader( manager )
-        .setMaterials( materials )
-        .setPath( '/resources/' )
-        .load( 'swordfishobj.obj', (result) => {
-          geoLibrary.fish = result.children[0].geometry;
-          this._CreateBoids(geoLibrary);
-        })
-      })
-      new MTLLoader( manager )
-      .setPath( '/resources/' )
-      .load( 'hammerhead.mtl', function ( materials ) {
+    new MTLLoader(manager)
+      .setPath('/resources/')
+      .load('swordfishobj.mtl', function (materials) {
 
         materials.preload();
-  
-        new OBJLoader( manager )
-          .setMaterials( materials )
-          .setPath( '/resources/' )
-          .load( 'hammerhead.obj', (result) => {
+
+        new OBJLoader(manager)
+          .setMaterials(materials)
+          .setPath('/resources/')
+          .load('swordfishobj.obj', (result) => {
+            geoLibrary.fish = result.children[0].geometry;
+            this._CreateBoids(geoLibrary);
+          })
+      })
+    new MTLLoader(manager)
+      .setPath('/resources/')
+      .load('hammerhead.mtl', function (materials) {
+
+        materials.preload();
+
+        new OBJLoader(manager)
+          .setMaterials(materials)
+          .setPath('/resources/')
+          .load('hammerhead.obj', (result) => {
             geoLibrary.shark = result.children[0].geometry;
             this._CreateBoids(geoLibrary);
           })
-        })
+      })
     loader.load("./resources/whale3.obj", (result) => {
       geoLibrary.bigFish = result.children[0].geometry;
       this._CreateBoids(geoLibrary);
@@ -382,12 +390,12 @@ class FishDemo extends game.Game {
 
   _CreateEntities() {
     const plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(400, 400, 32, 32),
-        new THREE.MeshStandardMaterial({
-            color: 0x837860,
-            transparent: true,
-            opacity: 0.5,
-        }));
+      new THREE.PlaneGeometry(400, 400, 32, 32),
+      new THREE.MeshStandardMaterial({
+        color: 0x837860,
+        transparent: true,
+        opacity: 0.5,
+      }));
     plane.position.set(0, -5, 0);
     plane.castShadow = false;
     plane.receiveShadow = true;
@@ -395,8 +403,8 @@ class FishDemo extends game.Game {
     this._graphics.Scene.add(plane);
 
     this._visibilityGrid = new visibility.VisibilityGrid(
-        [new THREE.Vector3(-500, 0, -500), new THREE.Vector3(500, 0, 500)],
-        [100, 100]);
+      [new THREE.Vector3(-500, 0, -500), new THREE.Vector3(500, 0, 500)],
+      [100, 100]);
 
   }
   //untuk create banyak boids per jenis ikannya
@@ -414,14 +422,14 @@ class FishDemo extends game.Game {
       speed: _BOID_SPEED,
       maxSteeringForce: _BOID_FORCE_MAX,
       acceleration: _BOID_ACCELERATION,
-     // colour: 0x80FF80,
+      // colour: 0x80FF80,
     };
     for (let i = 0; i < NUM_ENV; i++) {
       const e = new Boid(this, params);
       this._entities.push(e);
     }
 
-      params = {
+    params = {
       geometry: geoLibrary.smallfish,
       speedMin: 3.0,
       speedMax: 4.0,
@@ -486,8 +494,8 @@ class FishDemo extends game.Game {
     if (this._entities.length == 0) {
       return;
     }
-   
-// const eye = this._entities[0].Position.clone();
+
+    // const eye = this._entities[0].Position.clone();
 
     // const dir = this._entities[0].Direction.clone();
     // dir.multiplyScalar(5);
@@ -511,50 +519,49 @@ class FishDemo extends game.Game {
   }
 
 }
-
-
-function _Main() {
-  _APP = new FishDemo();
-
+function _changeObjColor(camera, obj) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
-  this._graphics = new graphics.Graphics(this);
-      if (!this._graphics.Initialize()) {
-        this._DisplayError('WebGL2 is not available.');
-        return;
-      }
 
-  function onMouseDown( event, geoLibrary ) {
-    // raycaster = new THREE.Raycaster();
-    // mouse = new THREE.Vector2();
+
+  function onMouseDown(event) {
 
     event.preventDefault();
 
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
-    raycaster.setFromCamera (mouse, this._graphics._camera);
+    raycaster.setFromCamera(mouse, camera);
 
-    var intersects = raycaster.intersectObjects( geoLibrary.fish);
-    
-    var color = (Math.random() * 0xffffff);
+    let intersects = raycaster.intersectObjects(obj, true);
+    console.log(intersects);
+    // let color = (Math.random() * 0xffffff);
 
-    if (intersects.length > 0) {
-      intersects[0].object.material.color.setHex(color);
-      console.log("test");
-      this.temp = intersects[0].object.material.color.getHexString();
-      this.name = intersects [0].object.name;
+    // if (intersects.length > 0) {
+    //   intersects[0].obj.material.color.setHex(color);
+    //   console.log("test");
+    //   this.temp = intersects[0].obj.material.color.getHexString();
+    //   this.name = intersects[0].obj.name;
 
-      $(".text").empty();
-      $(".popup").append("<div class = 'text'><p>color<strong> #" + this.temp +"</strong></p></div>" );
-      $(".popup").show();
-    }
+    //   $(".text").empty();
+    //   $(".popup").append("<div class = 'text'><p>color<strong> #" + this.temp + "</strong></p></div>");
+    //   $(".popup").show();
+    // }
   }
-  document.addEventListener ( 'mousedown', onMouseDown, false);
- 
-      
-
+  document.addEventListener('mousedown', onMouseDown, false);
+}
+function _Main() {
+  _APP = new FishDemo();
+  let groups = new Array();
+  console.log(_APP._entities);
+  _APP._entities.forEach(function(boidss){
+    groups.push(boidss._group)
+    console.log(boidss);
+  });
+  console.log(groups);
+  _changeObjColor(_APP._graphics._camera, _APP._entities);
+  // console.log(_APP);
 }
 
 _Main();
